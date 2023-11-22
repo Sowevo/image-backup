@@ -1,7 +1,9 @@
-name: Sync to B2
+name: Sync B2 to Git
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'  # 每12小时触发一次
 
 jobs:
   sync:
@@ -14,7 +16,7 @@ jobs:
     - name: Install B2 CLI
       uses: sylwit/install-b2-cli-action@v1.0.0
 
-    - name: Sync to B2
+    - name: Sync B2 to Git
       env:
         B2_BUCKET: ${{ secrets.B2_BUCKET }}
         B2_APPKEY_ID: ${{ secrets.B2_APPKEY_ID }}
@@ -26,9 +28,6 @@ jobs:
 
     - name: Commit and Push Changes
       run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@users.noreply.github.com"
-        
         git add .
         git commit -m "Sync B2 to Git"
         git push
