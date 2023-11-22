@@ -1,0 +1,35 @@
+name: Sync to B2
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install B2 CLI
+      uses: sylwit/install-b2-cli-action@v1.0.0
+
+    - name: Sync to B2
+      env:
+        B2_BUCKET: ${{ secrets.B2_BUCKET }}
+        B2_APPKEY_ID: ${{ secrets.B2_APPKEY_ID }}
+        B2_APPKEY: ${{ secrets.B2_APPKEY }}
+      run: |
+        b2 authorize_account ${B2_APPKEY_ID} ${B2_APPKEY}
+        b2 sync --delete --compareVersions size b2://${B2_BUCKET} ./backup
+        b2 clear-account
+
+    - name: Commit and Push Changes
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@users.noreply.github.com"
+        
+        git add .
+        git commit -m "Sync B2 to Git"
+        git push
