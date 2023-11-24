@@ -28,8 +28,13 @@ jobs:
 
     - name: Commit and Push Changes
       run: |
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add .
-        git commit -m "Sync B2 to Git"
-        git push
+        # Check if there are changes
+        if [[ $(git status --porcelain) ]]; then
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Sync B2 to Git"
+          git push
+        else
+          echo "No changes to commit."
+        fi
